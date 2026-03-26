@@ -1,0 +1,85 @@
+---
+import MobileTableOfContents from '@astrojs/starlight/components/MobileTableOfContents.astro';
+import TableOfContents from '@astrojs/starlight/components/TableOfContents.astro';
+---
+
+{
+    Astro.locals.starlightRoute.toc && (
+        <>
+            <div class="lg:sl-hidden">
+                <MobileTableOfContents />
+            </div>
+            <div class="right-sidebar-panel sl-hidden lg:sl-block">
+                <div class="toc-body">
+                    <div class="toc-topbar">
+                        <span class="toc-topbar-title">On this page</span>
+                    </div>
+                    <TableOfContents />
+                </div>
+            </div>
+        </>
+    )
+}
+
+<style>
+    @layer starlight.core {
+        .right-sidebar-panel {
+            padding: 1rem var(--sl-sidebar-pad-x);
+            box-sizing: border-box;
+            width: calc(
+                var(--sl-sidebar-width) - var(--sl-sidebar-pad-x) - var(--sl-sidebar-pad-x)
+            );
+        }
+
+        .toc-body {
+            width: 100%;
+        }
+
+        .toc-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .toc-topbar-title {
+            color: var(--sl-color-white);
+            font-size: var(--sl-text-sm);
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+
+        .right-sidebar-panel :global(nav > h2) {
+            display: none;
+        }
+
+        .right-sidebar-panel :global(:where(a)) {
+            display: block;
+            font-size: var(--sl-text-xs);
+            text-decoration: none;
+            color: var(--sl-color-gray-3);
+            overflow-wrap: anywhere;
+        }
+
+        .right-sidebar-panel :global(:where(a):hover) {
+            color: var(--sl-color-white);
+        }
+
+        @media (min-width: 72rem) {
+            .right-sidebar-panel {
+                max-width: calc(
+                    (
+                        100vw - var(--sl-sidebar-width) - var(--sl-content-pad-x) -
+                            var(--sl-content-pad-x) - var(--sl-sidebar-pad-x) -
+                            var(--sl-sidebar-pad-x)
+                    ) / 4
+                );
+            }
+
+            .toc-body {
+                max-width: 100%;
+            }
+        }
+    }
+</style>

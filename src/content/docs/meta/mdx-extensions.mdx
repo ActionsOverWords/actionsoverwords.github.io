@@ -1,0 +1,201 @@
+---
+title: MDX 확장 기능
+description: Markdown을 넘어 import, 컴포넌트, HTML 혼용 같은 MDX 확장 기능을 언제 어떻게 쓰는지 설명하는 가이드
+tags:
+  - mdx
+  - guide
+  - advanced
+lastUpdated: 2026-03-25
+---
+
+import NoticeBox from '../../../components/mdx/NoticeBox.astro';
+import { Aside, Card, CardGrid, TabItem, Tabs } from '@astrojs/starlight/components';
+
+# MDX 확장 기능
+
+MDX는 기본적으로 Markdown처럼 쓰지만, 필요하면 문서 안에서 더 많은 기능을 사용할 수 있습니다.
+
+중요한 점은 이것입니다.
+
+- 기본 문서 작성은 그냥 Markdown처럼 해도 충분하다
+- 확장 기능은 반복되는 UI가 필요할 때만 도입하는 편이 좋다
+
+## 어떤 기능이 확장 기능인가
+
+이 프로젝트 기준으로 MDX 확장 기능은 주로 아래를 말합니다.
+
+- `import` 구문
+- 컴포넌트 사용
+- 속성 전달
+- HTML 태그 직접 작성
+
+## 실제 적용 예시 먼저 보기
+
+아래 예시는 이 페이지 안에서 실제로 렌더링되고 있는 결과입니다. 즉, 설명용 텍스트가 아니라 지금 MDX가 실제로 적용된 상태입니다.
+
+### 예시 1: 직접 만든 컴포넌트 import
+
+다음은 이 프로젝트에 추가한 `NoticeBox` 컴포넌트를 import해서 사용하는 예시입니다.
+
+```mdx
+import NoticeBox from '../../../components/mdx/NoticeBox.astro';
+
+<NoticeBox title="주의" tone="warning">
+  캐시 키 구조를 바꾸기 전에는 기존 데이터와 충돌하지 않는지 먼저 확인해야 합니다.
+</NoticeBox>
+```
+
+실제 렌더링 결과:
+
+<NoticeBox title="주의" tone="warning">
+  캐시 키 구조를 바꾸기 전에는 기존 데이터와 충돌하지 않는지 먼저 확인해야 합니다.
+</NoticeBox>
+
+### 예시 2: Starlight 내장 컴포넌트 사용
+
+Starlight는 MDX 안에서 바로 사용할 수 있는 컴포넌트도 제공합니다.
+
+```mdx
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="tip" title="팁">
+  문서 대부분은 일반 Markdown으로 쓰고, 반복되는 UI가 생길 때만 컴포넌트를 쓰는 편이 좋습니다.
+</Aside>
+```
+
+실제 렌더링 결과:
+
+<Aside type="tip" title="팁">
+  문서 대부분은 일반 Markdown으로 쓰고, 반복되는 UI가 생길 때만 컴포넌트를 쓰는 편이 좋습니다.
+</Aside>
+
+### 예시 3: 카드 그리드 컴포넌트
+
+```mdx
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="위키 문서">
+    주제별로 오래 보관할 내용을 정리합니다.
+  </Card>
+  <Card title="블로그 글">
+    날짜 기준으로 학습 기록과 회고를 남깁니다.
+  </Card>
+</CardGrid>
+```
+
+실제 렌더링 결과:
+
+<CardGrid>
+  <Card title="위키 문서">
+    주제별로 오래 보관할 내용을 정리합니다.
+  </Card>
+  <Card title="블로그 글">
+    날짜 기준으로 학습 기록과 회고를 남깁니다.
+  </Card>
+</CardGrid>
+
+### 예시 4: 탭 컴포넌트
+
+```mdx
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs>
+  <TabItem label="위키">
+    `src/content/docs/` 아래에 문서를 작성합니다.
+  </TabItem>
+  <TabItem label="블로그">
+    `src/content/blog/` 아래에 날짜 기반 글을 작성합니다.
+  </TabItem>
+</Tabs>
+```
+
+실제 렌더링 결과:
+
+아래에서 `위키`, `블로그` 두 버튼처럼 보이는 줄이 실제 탭 UI입니다. 버튼을 누르면 아래 내용이 바뀝니다.
+
+<Tabs>
+  <TabItem label="위키">
+    `src/content/docs/` 아래에 문서를 작성합니다.
+  </TabItem>
+  <TabItem label="블로그">
+    `src/content/blog/` 아래에 날짜 기반 글을 작성합니다.
+  </TabItem>
+</Tabs>
+
+### 예시 5: HTML 태그 혼용
+
+```mdx
+<details>
+  <summary>자세히 보기</summary>
+  MDX에서는 필요하면 HTML 태그를 직접 섞어 사용할 수 있습니다.
+</details>
+```
+
+실제 렌더링 결과:
+
+<details>
+  <summary>자세히 보기</summary>
+  MDX에서는 필요하면 HTML 태그를 직접 섞어 사용할 수 있습니다.
+</details>
+
+## import
+
+문서 상단에서 컴포넌트를 가져올 수 있습니다.
+
+```mdx
+import NoticeBox from '../../components/NoticeBox.astro';
+```
+
+이것은 문서에서 재사용할 UI 조각을 불러오는 방식입니다.
+
+## 컴포넌트 사용
+
+가져온 컴포넌트는 태그처럼 사용할 수 있습니다.
+
+```mdx
+import NoticeBox from '../../components/NoticeBox.astro';
+
+<NoticeBox title="주의">
+운영 적용 전에는 테스트가 필요합니다.
+</NoticeBox>
+```
+
+이 방식은 경고 박스, 팁 박스, 반복되는 카드 UI에 적합합니다.
+
+## HTML 태그 혼용
+
+MDX에서는 필요하면 HTML을 직접 섞어 쓸 수도 있습니다.
+
+```mdx
+<details>
+  <summary>자세히 보기</summary>
+  여기에 접어서 숨길 설명을 넣을 수 있습니다.
+</details>
+```
+
+## 언제 쓰는 게 좋은가
+
+- 같은 안내 박스를 여러 문서에서 반복할 때
+- 문서 안에 공통 UI가 자주 나올 때
+- 단순 Markdown만으로 표현이 불편할 때
+
+## 아직 안 써도 되는 경우
+
+- 문서 대부분이 텍스트와 링크 중심일 때
+- 한 번만 나오는 표현을 위해 별도 컴포넌트를 만들게 될 때
+- 문서보다 구현 코드가 더 복잡해질 때
+
+## 초보자용 권장 순서
+
+1. 먼저 일반 Markdown 스타일로 작성한다
+2. 반복되는 패턴이 생기면 확장 기능을 검토한다
+3. 정말 필요한 경우에만 `import`와 컴포넌트를 도입한다
+
+## 기억할 핵심
+
+- MDX의 기본은 문서 작성
+- 확장 기능은 선택 사항
+- 처음에는 최소한만 쓰는 편이 좋다
+
+더 자세한 저장소용 설명은 [`docs/mdx-extensions-guide.md`](../../../../docs/mdx-extensions-guide.md)에서 볼 수 있습니다.

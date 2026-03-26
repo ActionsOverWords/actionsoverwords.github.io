@@ -1,0 +1,54 @@
+---
+interface Props {
+    title: string;
+    tone?: 'info' | 'warning' | 'success';
+}
+
+const { title, tone = 'info' } = Astro.props;
+---
+
+<aside class={`notice-box tone-${tone}`}>
+    <p class="notice-title">{title}</p>
+    <div class="notice-body">
+        <slot />
+    </div>
+</aside>
+
+<style>
+    .notice-box {
+        border: 1px solid var(--notice-border);
+        border-radius: 1rem;
+        padding: 1rem 1rem 0.95rem;
+        margin: 1rem 0;
+        background: var(--notice-bg);
+    }
+
+    .notice-title {
+        margin: 0 0 0.45rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--notice-title);
+    }
+
+    .notice-body :global(p:last-child) {
+        margin-bottom: 0;
+    }
+
+    .tone-info {
+        --notice-bg: #eef6ff;
+        --notice-border: #93c5fd;
+        --notice-title: #1d4ed8;
+    }
+
+    .tone-warning {
+        --notice-bg: #fff7ed;
+        --notice-border: #fdba74;
+        --notice-title: #c2410c;
+    }
+
+    .tone-success {
+        --notice-bg: #ecfdf5;
+        --notice-border: #86efac;
+        --notice-title: #15803d;
+    }
+</style>

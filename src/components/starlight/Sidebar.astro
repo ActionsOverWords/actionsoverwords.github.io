@@ -1,0 +1,92 @@
+---
+import MobileMenuFooter from '@astrojs/starlight/components/MobileMenuFooter.astro';
+import SidebarPersister from '@astrojs/starlight/components/SidebarPersister.astro';
+import SidebarSublist from '@astrojs/starlight/components/SidebarSublist.astro';
+
+const { sidebar } = Astro.locals.starlightRoute;
+const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path) => new URL(path.replace(/^\/+/, ''), `https://example.com${basePath}`).pathname;
+
+const helpLinks = [
+    { href: withBase('/meta/beginner-guide/'), label: '초보자 가이드' },
+    { href: withBase('/meta/mdx-guide/'), label: 'MDX 사용법' },
+    { href: withBase('/meta/mdx-extensions/'), label: '확장 기능' },
+];
+---
+
+<SidebarPersister>
+    <SidebarSublist sublist={sidebar} />
+</SidebarPersister>
+
+<div class="mobile-help md:sl-hidden">
+    <details>
+        <summary>
+            <span class="group-label">
+                <span class="large">도움말</span>
+            </span>
+        </summary>
+        <ul>
+            {helpLinks.map((link) => (
+                <li>
+                    <a href={link.href}>{link.label}</a>
+                </li>
+            ))}
+        </ul>
+    </details>
+</div>
+
+<div class="md:sl-hidden">
+    <MobileMenuFooter />
+</div>
+
+<style>
+    @layer starlight.core {
+        .mobile-help {
+            margin-top: 0.75rem;
+        }
+
+        .mobile-help details {
+            border-top: 1px solid var(--sl-color-hairline-shade);
+            padding-top: 0.75rem;
+        }
+
+        .mobile-help summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.2em 0.5rem;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .mobile-help summary::marker,
+        .mobile-help summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .mobile-help .large {
+            font-size: var(--sl-text-base);
+            font-weight: 600;
+            color: var(--sl-color-white);
+        }
+
+        .mobile-help ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.35rem 0 0;
+        }
+
+        .mobile-help li + li {
+            margin-top: 0.25rem;
+        }
+
+        .mobile-help a {
+            display: block;
+            padding: 0.3em 0.5rem;
+            border-radius: 0.25rem;
+            color: var(--sl-color-gray-2);
+            text-decoration: none;
+            line-height: 1.4;
+        }
+    }
+</style>

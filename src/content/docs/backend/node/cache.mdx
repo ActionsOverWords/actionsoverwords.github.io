@@ -1,0 +1,32 @@
+---
+title: Node Cache Notes
+description: Baseline guidance for cache layering, invalidation, and safe defaults in Node services.
+tags:
+  - backend
+  - node
+  - cache
+lastUpdated: 2026-03-25
+---
+
+## Layering
+
+Start with the simplest cache that reduces repeat work:
+
+1. per-request memoization
+2. in-process cache
+3. distributed cache only when multiple instances need shared state
+
+## Invalidation
+
+Invalidation rules should be documented before a cache is added. If invalidation is vague, the cache is not ready yet.
+
+## Operational note
+
+Pair cache work with a small regression checklist:
+
+- cold load still works
+- stale data can be refreshed
+- cache keys are stable
+- metrics show hit and miss behavior
+
+For project verification conventions, see [Quality Gates](../../../testing/quality-gates/).

@@ -1,0 +1,37 @@
+# build output
+dist/
+.codex-bootstrap/
+
+# test outputs
+test-results/
+playwright-report/
+coverage/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# editor settings
+.idea/
+.vscode/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.codex-config.toml.work
+
+# macOS-specific files
+.DS_Store

@@ -1,0 +1,42 @@
+---
+title: Architecture Plan
+description: Implementation roadmap and current delivery phases for the personal tech wiki.
+tags:
+  - planning
+  - architecture
+lastUpdated: 2026-03-25
+---
+
+# Current Execution Plan
+
+## Phase 1
+
+- Bootstrap Astro, Starlight, and MDX
+- Enable strict TypeScript checks
+- Lock in the initial sidebar and homepage structure
+
+## Phase 2
+
+- Define docs and blog content models
+- Add sample notes and dated posts
+- Keep metadata typed from the beginning
+
+## Phase 3
+
+- Add blog index and detail routes
+- Validate internal linking between wiki and blog content
+- Keep the UX docs-first with minimal custom code
+
+## Phase 4
+
+- Add unit and E2E test runners
+- Cover helper logic and core page availability
+- Make `typecheck`, `test`, `test:e2e`, and `build` first-class quality gates
+
+## Phase 5
+
+- Run local verification
+- Fix any schema, routing, or rendering regressions
+- Leave the project deployment-ready for static hosting later
+
+This page mirrors the longer planning document in [`docs/architecture-plan.md`](../../../../docs/architecture-plan.md) but stays visible inside the published wiki.

@@ -1,0 +1,138 @@
+---
+title: MDX 사용법
+description: Markdown처럼 시작해서 위키와 블로그 글을 작성할 수 있는 MDX 입문 가이드
+tags:
+  - mdx
+  - guide
+  - writing
+lastUpdated: 2026-03-25
+---
+
+# MDX 사용법
+
+MDX는 처음에는 거의 Markdown처럼 사용하면 됩니다.
+
+즉, 지금 단계에서는 아래 정도만 이해하면 충분합니다.
+
+- 문서 상단에 frontmatter를 적는다
+- 제목, 목록, 링크, 코드 블록을 쓴다
+- 필요하면 내부 문서 링크를 연결한다
+
+## MDX 파일의 기본 구조
+
+```mdx
+---
+title: Redis 입문
+description: Redis 기초 메모
+tags:
+  - redis
+  - backend
+draft: false
+lastUpdated: 2026-03-25
+---
+
+## Redis란
+
+Redis는 빠른 키-값 저장소로 많이 사용된다.
+```
+
+## Frontmatter
+
+문서 맨 위의 `---` 블록은 frontmatter입니다.
+
+위키 문서에서는 보통 아래 값을 사용합니다.
+
+- `title`
+- `description`
+- `tags`
+- `draft`
+- `lastUpdated`
+
+블로그 글은 여기에 `date`가 추가됩니다.
+
+## 자주 쓰는 문법
+
+### 제목
+
+```md
+## 제목
+### 소제목
+```
+
+### 목록
+
+```md
+- 항목 1
+- 항목 2
+```
+
+### 링크
+
+```md
+[품질 게이트](../../testing/quality-gates/)
+[블로그](../../blog/)
+```
+
+### 코드 블록
+
+```md
+```bash
+npm run dev
+```
+```
+
+## 위키 문서 예시
+
+```mdx
+---
+title: Redis 메모
+description: Redis를 처음 볼 때 필요한 기초 정리
+tags:
+  - redis
+  - backend
+draft: false
+lastUpdated: 2026-03-25
+---
+
+## 핵심 포인트
+
+- 캐시에 자주 사용된다
+- 속도가 빠르다
+- 키 설계가 중요하다
+```
+
+## 블로그 글 예시
+
+```mdx
+---
+title: Redis 공부 시작
+description: Redis를 처음 공부한 날의 기록
+date: 2026-03-26
+tags:
+  - redis
+  - study-log
+draft: false
+lastUpdated: 2026-03-26
+---
+
+오늘은 TTL과 캐시 무효화 차이를 먼저 정리했다.
+```
+
+## 초보자가 자주 하는 실수
+
+- frontmatter의 `---`를 빠뜨리는 경우
+- `tags` 들여쓰기를 잘못 쓰는 경우
+- 블로그 글에 `date`를 빼먹는 경우
+- 위키 문서를 `docs/`에 넣고 왜 안 보이는지 헷갈리는 경우
+
+## 처음에는 여기까지만 알면 충분하다
+
+- frontmatter 작성
+- 제목 작성
+- 목록 작성
+- 내부 링크 작성
+- 코드 블록 작성
+
+더 자세한 저장소용 설명은 [`docs/mdx-guide.md`](../../../../docs/mdx-guide.md)에서 볼 수 있습니다.
+
+MDX를 Markdown보다 더 확장해서 쓰는 방법은 [MDX 확장 기능](../mdx-extensions/)에서 볼 수 있습니다.

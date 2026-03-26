@@ -1,0 +1,28 @@
+{
+  "name": "wiki-mdx",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.38.2",
+    "@astrojs/mdx": "^5.0.2",
+    "astro": "^6.0.1",
+    "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.1"
+  }
+}

@@ -1,0 +1,403 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import { formatBlogDate } from '../../lib/blog';
+
+const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path) => new URL(path.replace(/^\/+/, ''), `https://example.com${basePath}`).pathname;
+
+export async function getStaticPaths() {
+    const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+    return posts.map((post) => ({
+        params: { slug: post.id },
+        props: { id: post.id },
+    }));
+}
+
+const { id } = Astro.props;
+const entry = await getEntry('blog', id);
+
+if (!entry || entry.data.draft) {
+    return Astro.redirect(withBase('/404/'));
+}
+
+const { Content, headings } = await render(entry);
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const wordCount = (entry.body ?? '').split(/\s+/u).filter(Boolean).length;
+const readingMinutes = Math.max(1, Math.round(wordCount / 220));
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{entry.data.title} | LeeHK's Wiki</title>
+        <meta name="description" content={entry.data.description} />
+    </head>
+    <body>
+        <main class="post-shell">
+            <a class="back-link" href={withBase('/blog/')}>Back to blog</a>
+
+            <div class="content-grid">
+                <article class="post-layout">
+                    <header class="post-header">
+                        <div class="meta-row">
+                            <span>{formatBlogDate(entry.data.date)}</span>
+                            <span>{readingMinutes} minute{readingMinutes > 1 ? 's' : ''} read</span>
+                        </div>
+
+                        <h1>{entry.data.title}</h1>
+
+                        <p class="lede">{entry.data.description}</p>
+                    </header>
+
+                    <section class="article-body">
+                        <Content />
+                    </section>
+                </article>
+
+                {toc.length > 0 && (
+                    <aside class="toc-panel" aria-label="Table of contents">
+                        <nav class="toc-nav">
+                            <p class="toc-title">In this article, you'll find:</p>
+
+                            <ul class="toc-list">
+                                {toc.map((heading) => (
+                                    <li class:list={[heading.depth === 3 ? 'depth-3' : 'depth-2']}>
+                                        <a href={`#${heading.slug}`}>{heading.text}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    </aside>
+                )}
+            </div>
+        </main>
+
+        <script>
+            const observedHeadings = document.querySelectorAll('article h2, article h3');
+            const tocLinks = document.querySelectorAll('.toc-panel a');
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) return;
+
+                        const id = entry.target.id;
+
+                        tocLinks.forEach((link) => {
+                            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                        });
+                    });
+                },
+                {
+                    rootMargin: '0px 0px -60% 0px',
+                    threshold: 0.1,
+                }
+            );
+
+            observedHeadings.forEach((heading) => observer.observe(heading));
+        </script>
+    </body>
+</html>
+
+<style>
+    :root {
+        color-scheme: dark;
+        --bg: #020817;
+        --panel: #0f172a;
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --border: rgb(51 65 85 / 0.6);
+        --link: #a78bfa;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        background:
+            radial-gradient(circle at top left, rgb(249 115 22 / 0.08), transparent 20rem),
+            radial-gradient(circle at top right, rgb(59 130 246 / 0.08), transparent 24rem),
+            linear-gradient(180deg, #020617 0%, #020817 100%);
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .post-shell {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 3rem 1rem 5rem;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.5rem;
+        padding: 0.7rem 1rem;
+        border: 1px solid rgb(59 130 246 / 0.35);
+        border-radius: 999px;
+        color: #e2e8f0;
+        background: rgb(15 23 42 / 0.45);
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        margin-top: 1.5rem;
+        padding: 2.5rem 0;
+    }
+
+    .post-layout {
+        min-width: 0;
+        padding: 3rem 0;
+    }
+
+    .post-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+        color: var(--muted);
+        font-size: 0.875rem;
+    }
+
+    .meta-row span {
+        color: #fff;
+    }
+
+    h1 {
+        margin: 0 0 1rem;
+        font-size: 2.25rem;
+        font-weight: 700;
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+    }
+
+    .lede {
+        margin: 0;
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+        color: var(--muted);
+    }
+
+    .article-body {
+        color: #cbd5e1;
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+    }
+
+    .article-body :global(h2),
+    .article-body :global(h3),
+    .article-body :global(h4) {
+        color: var(--text);
+        scroll-margin-top: 6rem;
+    }
+
+    .article-body :global(h2) {
+        margin: 4rem 0 1rem;
+        font-size: 1.5rem;
+        line-height: 2rem;
+        font-weight: 600;
+    }
+
+    .article-body :global(h3) {
+        margin: 2.5rem 0 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+        font-weight: 600;
+        color: #e2e8f0;
+    }
+
+    .article-body :global(h4) {
+        margin: 2rem 0 0.5rem;
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+        font-weight: 500;
+        color: #cbd5e1;
+    }
+
+    .article-body :global(p) {
+        margin: 1.5rem 0;
+        line-height: 1.75rem;
+    }
+
+    .article-body :global(ul),
+    .article-body :global(ol) {
+        margin: 1.5rem 0;
+        padding-left: 1.5rem;
+    }
+
+    .article-body :global(li) {
+        margin: 0.5rem 0;
+    }
+
+    .article-body :global(a) {
+        color: var(--link);
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 160ms ease;
+    }
+
+    .article-body :global(a:hover) {
+        color: #c4b5fd;
+    }
+
+    .article-body :global(code) {
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.375rem;
+        background: rgb(15 23 42 / 0.85);
+        color: #c4b5fd;
+        font-size: 0.95rem;
+    }
+
+    .article-body :global(pre) {
+        overflow-x: auto;
+        margin: 1.5rem 0;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        background: rgb(15 23 42 / 0.95);
+    }
+
+    .article-body :global(pre code) {
+        padding: 0;
+        background: transparent;
+        color: inherit;
+    }
+
+    .article-body :global(blockquote) {
+        margin: 1.5rem 0;
+        padding-left: 1.5rem;
+        border-left: 4px solid var(--border);
+        color: #cbd5e1;
+        font-style: italic;
+    }
+
+    .article-body :global(hr) {
+        margin: 3rem 0;
+        border: 0;
+        border-top: 1px solid var(--border);
+    }
+
+    .toc-panel {
+        display: none;
+    }
+
+    .toc-title {
+        margin: 0 0 1rem;
+        color: var(--muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .toc-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .toc-list li {
+        position: relative;
+        margin: 0;
+    }
+
+    .toc-list a {
+        display: block;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.375rem;
+        color: #94a3b8;
+        font-size: 0.875rem;
+        transition:
+            color 160ms ease,
+            background-color 160ms ease;
+    }
+
+    .toc-list a:hover {
+        color: #e2e8f0;
+        background: rgb(30 41 59 / 0.8);
+    }
+
+    .toc-list a.active {
+        color: #f8fafc;
+        background: rgb(30 41 59 / 0.8);
+        font-weight: 500;
+    }
+
+    .toc-list a.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 0.25rem;
+        height: 1rem;
+        border-radius: 999px;
+        background: #a78bfa;
+        transform: translateY(-50%);
+    }
+
+    .depth-3 a {
+        padding-left: 1.5rem;
+        color: #64748b;
+    }
+
+    .depth-3 a.active {
+        color: #e2e8f0;
+    }
+
+    @media (min-width: 64rem) {
+        .content-grid {
+            grid-template-columns: minmax(0, 1fr) 17.5rem;
+            gap: 3rem;
+        }
+
+        .toc-panel {
+            display: block;
+        }
+
+        .toc-nav {
+            position: sticky;
+            top: 6rem;
+            max-height: calc(100vh - 8rem);
+            overflow-y: auto;
+        }
+    }
+
+    @media (max-width: 48rem) {
+        .post-shell {
+            padding-top: 2rem;
+        }
+
+        .post-layout {
+            padding: 1.25rem 0 0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            line-height: 1.2;
+        }
+
+        .lede,
+        .article-body {
+            font-size: 1rem;
+        }
+    }
+</style>

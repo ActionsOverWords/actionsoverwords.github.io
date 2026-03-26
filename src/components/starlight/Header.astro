@@ -1,0 +1,243 @@
+---
+import Search from '@astrojs/starlight/components/Search.astro';
+import SiteTitle from '@astrojs/starlight/components/SiteTitle.astro';
+import ThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro';
+import config from 'virtual:starlight/user-config';
+
+const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path) => new URL(path.replace(/^\/+/, ''), `https://example.com${basePath}`).pathname;
+const pathname = Astro.url.pathname;
+const relativePathname = pathname.startsWith(basePath)
+    ? `/${pathname.slice(basePath.length).replace(/^\/+/, '')}`
+    : pathname;
+const isBlog = relativePathname === '/blog/' || relativePathname.startsWith('/blog/');
+const primaryNavLink = isBlog ? { href: withBase('/'), label: 'Wiki' } : { href: withBase('/blog/'), label: 'Blog' };
+const helpLinks = [
+    { href: withBase('/meta/beginner-guide/'), label: '초보자 가이드' },
+    { href: withBase('/meta/mdx-guide/'), label: 'MDX 사용법' },
+    { href: withBase('/meta/mdx-extensions/'), label: '확장 기능' },
+];
+
+const shouldRenderSearch =
+    config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
+---
+
+<div class="header">
+    <div class="title-group">
+        <div class="title-wrapper sl-flex">
+            <SiteTitle />
+        </div>
+        <nav class="desktop-nav sl-hidden md:sl-flex" aria-label="Primary">
+            <a href={primaryNavLink.href} class="nav-link">
+                {primaryNavLink.label}
+            </a>
+            <details class="help-menu" data-hover-delay-menu>
+                <summary class="nav-link">도움말</summary>
+                <div class="help-popover">
+                    {helpLinks.map((link) => (
+                        <a href={link.href} class="help-link">
+                            {link.label}
+                        </a>
+                    ))}
+                </div>
+            </details>
+        </nav>
+    </div>
+
+    <div class="actions print:hidden">
+        {shouldRenderSearch && <Search class="search-control" />}
+        <div class="sl-hidden md:sl-flex theme-control">
+            <ThemeSelect />
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll<HTMLDetailsElement>('[data-hover-delay-menu]').forEach((menu) => {
+        let openTimer: number | undefined;
+        let closeTimer: number | undefined;
+
+        const clearTimers = () => {
+            if (openTimer) {
+                window.clearTimeout(openTimer);
+                openTimer = undefined;
+            }
+            if (closeTimer) {
+                window.clearTimeout(closeTimer);
+                closeTimer = undefined;
+            }
+        };
+
+        const openMenu = () => {
+            clearTimers();
+            openTimer = window.setTimeout(() => {
+                menu.open = true;
+            }, 300);
+        };
+
+        const closeMenu = () => {
+            clearTimers();
+            closeTimer = window.setTimeout(() => {
+                menu.open = false;
+            }, 500);
+        };
+
+        menu.addEventListener('mouseenter', openMenu);
+        menu.addEventListener('mouseleave', closeMenu);
+        menu.addEventListener('focusin', openMenu);
+        menu.addEventListener('focusout', (event) => {
+            if (!menu.contains(event.relatedTarget as Node | null)) closeMenu();
+        });
+
+        menu.querySelector('summary')?.addEventListener('click', (event) => {
+            event.preventDefault();
+        });
+    });
+</script>
+
+<style>
+    @layer starlight.core {
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .title-group {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            min-width: 0;
+        }
+
+        .title-wrapper {
+            overflow: clip;
+            padding: 0.25rem;
+            margin: -0.25rem;
+            min-width: 0;
+        }
+
+        .desktop-nav {
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .nav-link,
+        .help-menu summary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.55rem 0.85rem;
+            border-radius: 999px;
+            color: var(--sl-color-gray-2);
+            font-size: var(--sl-text-sm);
+            font-weight: 600;
+            text-decoration: none;
+            list-style: none;
+            cursor: pointer;
+            transition: background-color 160ms ease, color 160ms ease;
+        }
+
+        .help-menu summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .nav-link:hover,
+        .help-menu summary:hover,
+        .help-menu[open] summary {
+            background: color-mix(in srgb, var(--sl-color-accent) 10%, transparent);
+            color: var(--sl-color-white);
+        }
+
+        .help-menu {
+            position: relative;
+        }
+
+        .help-popover {
+            position: absolute;
+            inset-block-start: calc(100% + 0.55rem);
+            inset-inline-start: 0;
+            min-width: 12rem;
+            padding: 0.5rem;
+            border: 1px solid var(--sl-color-hairline-shade);
+            border-radius: 1rem;
+            background: var(--sl-color-bg-nav);
+            box-shadow: var(--sl-shadow-md);
+        }
+
+        .help-link {
+            display: block;
+            padding: 0.7rem 0.8rem;
+            border-radius: 0.75rem;
+            color: var(--sl-color-gray-2);
+            font-size: var(--sl-text-sm);
+            text-decoration: none;
+        }
+
+        .help-link:hover {
+            background: var(--sl-color-gray-6);
+            color: var(--sl-color-white);
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.9rem;
+            min-width: 0;
+            margin-inline-start: auto;
+        }
+
+        .theme-control {
+            align-items: center;
+        }
+
+        .search-control {
+            min-width: 0;
+            flex: 0 1 60rem;
+        }
+
+        .actions :global(site-search button[data-open-modal]) {
+            width: min(16rem, 24vw);
+            max-width: none;
+        }
+
+        @media (min-width: 50rem) {
+            :global(:root[data-has-sidebar]) {
+                --__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
+            }
+
+            :global(:root:not([data-has-toc])) {
+                --__toc-width: 0rem;
+            }
+
+            .header {
+                --__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
+                --__main-column-fr: calc(
+                    (
+                            100% + var(--__sidebar-pad, 0rem) - var(--__toc-width, var(--sl-sidebar-width)) -
+                                (2 * var(--__toc-width, var(--sl-nav-pad-x))) - var(--sl-content-inline-start, 0rem) -
+                                var(--sl-content-width)
+                        ) / 2
+                );
+                display: grid;
+                grid-template-columns:
+                    minmax(
+                        calc(var(--__sidebar-width) + max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))),
+                        auto
+                    )
+                    auto;
+            }
+
+            .actions {
+                justify-self: end;
+            }
+
+            .search-control {
+                width: min(60rem, 100%);
+            }
+        }
+    }
+</style>
