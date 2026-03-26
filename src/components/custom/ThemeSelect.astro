@@ -1,0 +1,101 @@
+<div class="theme-switcher">
+    <label class="sr-only" for="theme-select">Theme</label>
+    <select id="theme-select" class="theme-select" aria-label="Select theme">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="auto">Auto</option>
+    </select>
+</div>
+
+<script>
+    type Theme = 'auto' | 'dark' | 'light';
+
+    const storageKey = 'starlight-theme';
+    const parseTheme = (theme: unknown): Theme =>
+        theme === 'auto' || theme === 'dark' || theme === 'light' ? theme : 'auto';
+    const select = document.querySelector('#theme-select');
+
+    const loadTheme = (): Theme =>
+        parseTheme(typeof localStorage !== 'undefined' ? localStorage.getItem(storageKey) : null);
+
+    const getPreferredColorScheme = (): 'dark' | 'light' =>
+        matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+
+    const applyTheme = (theme: Theme) => {
+        document.documentElement.dataset.theme = theme === 'auto' ? getPreferredColorScheme() : theme;
+
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(storageKey, theme === 'auto' ? '' : theme);
+        }
+
+        if (select instanceof HTMLSelectElement) {
+            select.value = theme;
+        }
+    };
+
+    if (select instanceof HTMLSelectElement) {
+        select.value = loadTheme();
+        select.addEventListener('change', (event) => {
+            const target = event.currentTarget;
+
+            if (!(target instanceof HTMLSelectElement)) return;
+            applyTheme(parseTheme(target.value));
+        });
+    }
+
+    matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+        if (loadTheme() === 'auto') applyTheme('auto');
+    });
+</script>
+
+<style>
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .theme-switcher {
+        display: inline-flex;
+        align-items: center;
+        color: var(--theme-select-text, var(--theme-control-text, inherit));
+    }
+
+    .theme-select {
+        min-height: 2.5rem;
+        width: 7rem;
+        padding: 0.625rem 2rem 0.625rem 0.75rem;
+        border: 1px solid var(--theme-select-border, var(--theme-control-border, rgb(59 130 246 / 0.22)));
+        border-radius: 0.5rem;
+        color: inherit;
+        font: inherit;
+        background-color: var(--theme-select-bg, transparent);
+        appearance: none;
+        cursor: pointer;
+        background-image:
+            linear-gradient(45deg, transparent 50%, currentColor 50%),
+            linear-gradient(135deg, currentColor 50%, transparent 50%);
+        background-position:
+            calc(100% - 0.9rem) calc(50% - 0.12rem),
+            calc(100% - 0.65rem) calc(50% - 0.12rem);
+        background-size: 0.32rem 0.32rem, 0.32rem 0.32rem;
+        background-repeat: no-repeat;
+        transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+    }
+
+    .theme-select:hover {
+        color: var(--theme-select-hover-text, var(--theme-select-text, var(--theme-control-text, inherit)));
+        border-color: var(--theme-select-hover-border, var(--theme-select-border, var(--theme-control-border, rgb(59 130 246 / 0.22))));
+    }
+
+    .theme-select option {
+        background: var(--theme-select-option-bg, var(--theme-control-bg, #0f172a));
+        color: var(--theme-select-option-text, var(--theme-control-text, #f8fafc));
+    }
+</style>

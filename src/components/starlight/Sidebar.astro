@@ -5,7 +5,7 @@ import SidebarSublist from '@astrojs/starlight/components/SidebarSublist.astro';
 
 const { sidebar } = Astro.locals.starlightRoute;
 const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
-const withBase = (path) => new URL(path.replace(/^\/+/, ''), `https://example.com${basePath}`).pathname;
+const withBase = (path: string) => new URL(path.replace(/^\/+/, ''), `https://example.com${basePath}`).pathname;
 
 const helpLinks = [
     { href: withBase('/meta/beginner-guide/'), label: '초보자 가이드' },
@@ -87,6 +87,11 @@ const helpLinks = [
             color: var(--sl-color-gray-2);
             text-decoration: none;
             line-height: 1.4;
+        }
+
+        .mobile-help a:hover {
+            background: var(--sl-color-gray-6);
+            color: var(--sl-color-white);
         }
     }
 </style>

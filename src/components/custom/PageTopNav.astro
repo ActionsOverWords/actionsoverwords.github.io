@@ -1,0 +1,183 @@
+---
+import ThemeSelect from './ThemeSelect.astro';
+
+interface Props {
+    basePath?: string;
+    current: 'wiki' | 'blog' | 'tags';
+}
+
+const basePath = Astro.props.basePath?.endsWith('/') ? Astro.props.basePath : `${Astro.props.basePath ?? '/'}/`;
+const withBase = (path: string) => new URL(path.replace(/^\/+/, ''), `https://example.com${basePath}`).pathname;
+const navLinks = [
+    { href: withBase('/'), label: 'Wiki', active: Astro.props.current === 'wiki' },
+    { href: withBase('/blog/'), label: 'Blog', active: Astro.props.current === 'blog' },
+    { href: withBase('/tags/'), label: 'Tags', active: Astro.props.current === 'tags' },
+];
+const helpLinks = [
+    { href: withBase('/meta/beginner-guide/'), label: '초보자 가이드' },
+    { href: withBase('/meta/mdx-guide/'), label: 'MDX 사용법' },
+    { href: withBase('/meta/mdx-extensions/'), label: '확장 기능' },
+];
+---
+
+<div class="page-top-nav">
+    <nav class="primary-nav" aria-label="Primary">
+        {navLinks.map((link) => (
+            <a href={link.href} class:list={['nav-link', link.active && 'is-active']}>
+                {link.label}
+            </a>
+        ))}
+        <details class="help-menu" data-hover-delay-menu>
+            <summary class="nav-link">도움말</summary>
+            <div class="help-popover">
+                {helpLinks.map((link) => (
+                    <a href={link.href} class="help-link">
+                        {link.label}
+                    </a>
+                ))}
+            </div>
+        </details>
+    </nav>
+
+    <ThemeSelect />
+</div>
+
+<script>
+    document.querySelectorAll<HTMLDetailsElement>('[data-hover-delay-menu]').forEach((menu) => {
+        let openTimer: number | undefined;
+        let closeTimer: number | undefined;
+
+        const clearTimers = () => {
+            if (openTimer) {
+                window.clearTimeout(openTimer);
+                openTimer = undefined;
+            }
+
+            if (closeTimer) {
+                window.clearTimeout(closeTimer);
+                closeTimer = undefined;
+            }
+        };
+
+        const openMenu = () => {
+            clearTimers();
+            openTimer = window.setTimeout(() => {
+                menu.open = true;
+            }, 300);
+        };
+
+        const closeMenu = () => {
+            clearTimers();
+            closeTimer = window.setTimeout(() => {
+                menu.open = false;
+            }, 500);
+        };
+
+        menu.addEventListener('mouseenter', openMenu);
+        menu.addEventListener('mouseleave', closeMenu);
+        menu.addEventListener('focusin', openMenu);
+        menu.addEventListener('focusout', (event) => {
+            if (!menu.contains(event.relatedTarget as Node | null)) closeMenu();
+        });
+
+        menu.querySelector('summary')?.addEventListener('click', (event) => {
+            event.preventDefault();
+        });
+    });
+</script>
+
+<style>
+    .page-top-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .primary-nav {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        min-width: 0;
+    }
+
+    .nav-link,
+    .help-menu summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.55rem 0.85rem;
+        border-radius: 999px;
+        color: var(--sl-color-gray-2, var(--muted));
+        font-size: var(--sl-text-sm, 0.875rem);
+        font-weight: 600;
+        text-decoration: none;
+        list-style: none;
+        cursor: pointer;
+        transition: background-color 160ms ease, color 160ms ease;
+    }
+
+    .help-menu {
+        position: relative;
+    }
+
+    .help-menu summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .nav-link:hover,
+    .help-menu summary:hover,
+    .help-menu[open] summary {
+        background: color-mix(in srgb, var(--sl-color-accent, #f97316) 10%, transparent);
+        color: var(--sl-color-white, var(--text));
+    }
+
+    .nav-link.is-active {
+        background: color-mix(in srgb, var(--sl-color-accent, #f97316) 14%, transparent);
+        color: var(--sl-color-white, var(--text));
+    }
+
+    .help-popover {
+        position: absolute;
+        inset-block-start: calc(100% + 0.55rem);
+        inset-inline-start: 0;
+        min-width: 12rem;
+        padding: 0.5rem;
+        border: 1px solid var(--sl-color-hairline-shade, var(--control-border));
+        border-radius: 1rem;
+        background: #0f172a;
+        box-shadow: var(--sl-shadow-md, 0 12px 24px rgb(15 23 42 / 0.18));
+        z-index: 10;
+    }
+
+    :global(:root[data-theme='light']) .help-popover {
+        background: #ffffff;
+    }
+
+    .help-link {
+        display: block;
+        padding: 0.7rem 0.8rem;
+        border-radius: 0.75rem;
+        color: var(--sl-color-gray-2, var(--muted));
+        font-size: var(--sl-text-sm, 0.875rem);
+        text-decoration: none;
+    }
+
+    .help-link:hover {
+        background: var(--sl-color-gray-6, color-mix(in srgb, var(--panel) 90%, white 10%));
+        color: var(--sl-color-white, var(--text));
+    }
+
+    @media (max-width: 48rem) {
+        .page-top-nav {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .primary-nav {
+            order: 2;
+        }
+    }
+</style>

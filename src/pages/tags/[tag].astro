@@ -1,0 +1,267 @@
+---
+import { getCollection } from 'astro:content';
+import PageTopNav from '../../components/custom/PageTopNav.astro';
+import ThemeProviderInline from '../../components/custom/ThemeProviderInline.astro';
+
+import { getPublishedPosts } from '../../lib/blog';
+import { getAllTags, getTagHref, getTagLabelFromSlug, getTaggedItems } from '../../lib/tags';
+
+const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
+export async function getStaticPaths() {
+    const docs = await getCollection('docs', ({ data }) => !data.draft);
+    const posts = getPublishedPosts(await getCollection('blog'));
+
+    return getAllTags(docs, posts).map((tag) => ({
+        params: { tag },
+    }));
+}
+
+const slug = Astro.params.tag ?? '';
+const docs = await getCollection('docs', ({ data }) => !data.draft);
+const posts = getPublishedPosts(await getCollection('blog'));
+const allTags = getAllTags(docs, posts);
+const tagLabel = getTagLabelFromSlug(slug, allTags);
+
+if (!tagLabel) {
+    return Astro.redirect(new URL('404/', `https://example.com${basePath}`).pathname);
+}
+
+const { docs: taggedDocs, posts: taggedPosts, total } = getTaggedItems(tagLabel, docs, posts, basePath);
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>#{tagLabel} | Tags</title>
+        <meta
+            name="description"
+            content={`Browse ${total} wiki and blog item${total === 1 ? '' : 's'} tagged with ${tagLabel}.`}
+        />
+        <ThemeProviderInline />
+    </head>
+    <body>
+        <main class="tag-shell">
+            <PageTopNav basePath={basePath} current="tags" />
+
+            <a class="back-link" href={new URL('tags/', `https://example.com${basePath}`).pathname}>Back to tags</a>
+
+            <section class="hero">
+                <p class="eyebrow">Tag</p>
+                <h1>#{tagLabel}</h1>
+                <p class="lede">
+                    {total} item{total === 1 ? '' : 's'} across the wiki and the blog.
+                </p>
+            </section>
+
+            {taggedDocs.length > 0 && (
+                <section class="group">
+                    <div class="group-header">
+                        <h2>Wiki</h2>
+                        <span>{taggedDocs.length}</span>
+                    </div>
+
+                    <div class="item-grid">
+                        {taggedDocs.map((item) => (
+                            <a class="item-card" href={item.href}>
+                                <span class="item-type">Wiki</span>
+                                <h3>{item.title}</h3>
+                                <p>{item.description}</p>
+                                {item.dateLabel && <small>{item.dateLabel}</small>}
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {taggedPosts.length > 0 && (
+                <section class="group">
+                    <div class="group-header">
+                        <h2>Blog</h2>
+                        <span>{taggedPosts.length}</span>
+                    </div>
+
+                    <div class="item-grid">
+                        {taggedPosts.map((item) => (
+                            <a class="item-card" href={item.href}>
+                                <span class="item-type">Blog</span>
+                                <h3>{item.title}</h3>
+                                <p>{item.description}</p>
+                                {item.dateLabel && <small>{item.dateLabel}</small>}
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            <section class="related-tags">
+                <h2>Other tags</h2>
+                <div class="chip-row">
+                    {allTags.filter((tag) => tag !== tagLabel).map((tag) => (
+                        <a class="tag-chip" href={getTagHref(tag, basePath)}>#{tag}</a>
+                    ))}
+                </div>
+            </section>
+        </main>
+    </body>
+</html>
+
+<style>
+    :root {
+        color-scheme: dark;
+        --bg: #020817;
+        --bg-start: #020617;
+        --bg-end: #020817;
+        --glow-left: rgb(249 115 22 / 0.08);
+        --glow-right: rgb(14 165 233 / 0.08);
+        --panel: rgb(15 23 42 / 0.72);
+        --border: rgb(59 130 246 / 0.18);
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --control-bg: rgb(15 23 42 / 0.45);
+        --control-border: rgb(59 130 246 / 0.3);
+        --control-text: #e2e8f0;
+        --item-copy: #dbe4f0;
+    }
+
+    :root[data-theme='light'] {
+        color-scheme: light;
+        --bg: #f8fafc;
+        --bg-start: #fffaf5;
+        --bg-end: #eef2ff;
+        --glow-left: rgb(249 115 22 / 0.12);
+        --glow-right: rgb(14 165 233 / 0.12);
+        --panel: rgb(255 255 255 / 0.86);
+        --border: rgb(148 163 184 / 0.24);
+        --text: #0f172a;
+        --muted: #64748b;
+        --control-bg: rgb(255 255 255 / 0.84);
+        --control-border: rgb(148 163 184 / 0.45);
+        --control-text: #0f172a;
+        --item-copy: #334155;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        background:
+            radial-gradient(circle at top left, var(--glow-left), transparent 22rem),
+            radial-gradient(circle at top right, var(--glow-right), transparent 24rem),
+            linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .tag-shell {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 3rem 1rem 5rem;
+    }
+
+    .back-link,
+    .tag-chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.5rem;
+        padding: 0.65rem 0.95rem;
+        border: 1px solid var(--control-border);
+        border-radius: 999px;
+        background: var(--control-bg);
+        color: var(--control-text);
+    }
+
+    .hero {
+        padding: 1.5rem 0 2rem;
+    }
+
+    .eyebrow {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.875rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    h1 {
+        margin: 0.75rem 0 0;
+        font-size: 2.5rem;
+        line-height: 1.15;
+    }
+
+    .lede {
+        margin: 0.8rem 0 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+    }
+
+    .group + .group,
+    .related-tags {
+        margin-top: 2rem;
+    }
+
+    .group-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .group-header h2,
+    .related-tags h2 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .group-header span {
+        color: var(--muted);
+    }
+
+    .item-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    }
+
+    .item-card {
+        display: grid;
+        gap: 0.65rem;
+        padding: 1.2rem;
+        border: 1px solid var(--border);
+        border-radius: 1.25rem;
+        background: var(--panel);
+    }
+
+    .item-type,
+    small {
+        color: var(--muted);
+    }
+
+    .item-card h3 {
+        margin: 0;
+        font-size: 1.15rem;
+    }
+
+    .item-card p {
+        margin: 0;
+        color: var(--item-copy);
+        line-height: 1.65;
+    }
+
+    .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+</style>

@@ -1,6 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
+import ThemeProviderInline from '../../components/custom/ThemeProviderInline.astro';
+import ThemeSelect from '../../components/custom/ThemeSelect.astro';
 import { formatBlogDate, getPostHref } from '../../lib/blog';
+import { getTagHref } from '../../lib/tags';
 
 const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
@@ -19,9 +22,14 @@ const loadMoreCount = 9;
             name="description"
             content="Recent implementation notes, learning logs, and retrospectives from the personal tech wiki."
         />
+        <ThemeProviderInline />
     </head>
     <body>
         <main class="blog-shell">
+            <div class="utility-bar">
+                <ThemeSelect />
+            </div>
+
             <section class="hero">
                 <div class="hero-copy">
                     <p class="eyebrow">Blog</p>
@@ -64,7 +72,7 @@ const loadMoreCount = 9;
                                     {post.data.tags.length > 0 && (
                                         <span class="tag-group">
                                             {post.data.tags.slice(0, 2).map((tag) => (
-                                                <span class="tag">#{tag}</span>
+                                                <a class="tag" href={getTagHref(tag, basePath)}>#{tag}</a>
                                             ))}
                                         </span>
                                     )}
@@ -97,11 +105,15 @@ const loadMoreCount = 9;
             const searchInput = document.querySelector('#blog-search');
             const postCards = Array.from(document.querySelectorAll('.post-card'));
             const loadMoreButton = document.querySelector('#load-more-posts');
-            const initialVisibleCount = Number(loadMoreButton?.dataset.initialVisibleCount ?? '6');
-            const loadMoreCount = Number(loadMoreButton?.dataset.loadMoreCount ?? '6');
+            const initialVisibleCount = Number(
+                loadMoreButton instanceof HTMLButtonElement ? loadMoreButton.dataset.initialVisibleCount ?? '6' : '6'
+            );
+            const loadMoreCount = Number(
+                loadMoreButton instanceof HTMLButtonElement ? loadMoreButton.dataset.loadMoreCount ?? '6' : '6'
+            );
             let visibleCount = initialVisibleCount;
 
-            const updateVisibleCards = (query) => {
+            const updateVisibleCards = (query: string) => {
                 const normalizedQuery = query.trim().toLowerCase();
                 let matchedCount = 0;
 
@@ -149,13 +161,53 @@ const loadMoreCount = 9;
     :root {
         color-scheme: dark;
         --bg: #020817;
+        --bg-start: #020617;
+        --bg-end: #020817;
+        --glow-left: rgb(249 115 22 / 0.06);
+        --glow-right: rgb(59 130 246 / 0.06);
         --panel: rgb(24 24 27 / 0.6);
         --panel-hover: rgb(24 24 27 / 0.8);
         --text: #f8fafc;
+        --heading: #d4d4d8;
+        --body-copy: #a1a1aa;
         --muted: #a1a1aa;
         --muted-2: #94a3b8;
         --border: rgb(39 39 42 / 0.9);
         --accent: #a78bfa;
+        --input-bg: rgb(15 23 42 / 0.92);
+        --input-border: rgb(30 41 59 / 1);
+        --control-bg: rgb(15 23 42 / 0.45);
+        --control-border: rgb(59 130 246 / 0.3);
+        --control-text: #e2e8f0;
+        --chip-bg: #27272a;
+        --chip-text: #d4d4d8;
+        --shadow: 0 20px 32px rgb(0 0 0 / 0.3);
+    }
+
+    :root[data-theme='light'] {
+        color-scheme: light;
+        --bg: #f8fafc;
+        --bg-start: #fffaf5;
+        --bg-end: #eef2ff;
+        --glow-left: rgb(249 115 22 / 0.12);
+        --glow-right: rgb(59 130 246 / 0.12);
+        --panel: rgb(255 255 255 / 0.8);
+        --panel-hover: rgb(255 255 255 / 0.96);
+        --text: #0f172a;
+        --heading: #0f172a;
+        --body-copy: #475569;
+        --muted: #475569;
+        --muted-2: #64748b;
+        --border: rgb(203 213 225 / 0.92);
+        --accent: #7c3aed;
+        --input-bg: rgb(255 255 255 / 0.94);
+        --input-border: rgb(203 213 225 / 1);
+        --control-bg: rgb(255 255 255 / 0.84);
+        --control-border: rgb(148 163 184 / 0.45);
+        --control-text: #0f172a;
+        --chip-bg: #e2e8f0;
+        --chip-text: #334155;
+        --shadow: 0 18px 30px rgb(148 163 184 / 0.18);
     }
 
     * {
@@ -180,9 +232,9 @@ const loadMoreCount = 9;
         color: var(--text);
         font-family: ui-sans-serif, system-ui, sans-serif;
         background:
-            radial-gradient(circle at top left, rgb(249 115 22 / 0.06), transparent 18rem),
-            radial-gradient(circle at top right, rgb(59 130 246 / 0.06), transparent 22rem),
-            linear-gradient(180deg, #020617 0%, #020817 100%);
+            radial-gradient(circle at top left, var(--glow-left), transparent 18rem),
+            radial-gradient(circle at top right, var(--glow-right), transparent 22rem),
+            linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
     }
 
     a {
@@ -194,6 +246,12 @@ const loadMoreCount = 9;
         max-width: 72rem;
         margin: 0 auto;
         padding: 3rem 1rem 5rem;
+    }
+
+    .utility-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 1rem;
     }
 
     .hero {
@@ -214,7 +272,7 @@ const loadMoreCount = 9;
 
     h1 {
         margin: 0.75rem 0 0;
-        color: #d4d4d8;
+        color: var(--heading);
         font-family: ui-sans-serif, system-ui, sans-serif;
         font-size: 2.25rem;
         line-height: 1.25;
@@ -224,7 +282,7 @@ const loadMoreCount = 9;
 
     .lede {
         margin: 1.5rem 0 0;
-        color: #a1a1aa;
+        color: var(--body-copy);
         font-size: 1.125rem;
         line-height: 1.75rem;
         max-width: 44rem;
@@ -241,10 +299,10 @@ const loadMoreCount = 9;
         align-items: center;
         min-height: 2.5rem;
         padding: 0.75rem 1rem;
-        border: 1px solid rgb(59 130 246 / 0.3);
+        border: 1px solid var(--control-border);
         border-radius: 999px;
-        color: #e2e8f0;
-        background: rgb(15 23 42 / 0.45);
+        color: var(--control-text);
+        background: var(--control-bg);
     }
 
     .posts-section {
@@ -261,10 +319,10 @@ const loadMoreCount = 9;
         width: 100%;
         height: 3.5rem;
         padding: 0.5rem 1.25rem;
-        border: 1px solid rgb(30 41 59 / 1);
+        border: 1px solid var(--input-border);
         border-radius: 0.75rem;
-        background: rgb(15 23 42 / 0.92);
-        color: #e2e8f0;
+        background: var(--input-bg);
+        color: var(--text);
         font: inherit;
         transition:
             border-color 160ms ease,
@@ -272,7 +330,7 @@ const loadMoreCount = 9;
     }
 
     .search-input::placeholder {
-        color: #64748b;
+        color: var(--muted-2);
     }
 
     .search-input:focus {
@@ -295,10 +353,10 @@ const loadMoreCount = 9;
     .load-more-button {
         min-height: 2.75rem;
         padding: 0.75rem 1.25rem;
-        border: 1px solid rgb(59 130 246 / 0.3);
+        border: 1px solid var(--control-border);
         border-radius: 999px;
-        background: rgb(15 23 42 / 0.45);
-        color: #e2e8f0;
+        background: var(--control-bg);
+        color: var(--control-text);
         font: inherit;
         cursor: pointer;
         transition:
@@ -309,7 +367,7 @@ const loadMoreCount = 9;
 
     .load-more-button:hover {
         transform: translateY(-1px);
-        background: rgb(15 23 42 / 0.7);
+        background: var(--panel-hover);
         border-color: rgb(59 130 246 / 0.5);
     }
 
@@ -327,7 +385,7 @@ const loadMoreCount = 9;
 
     .post-card:hover {
         background: var(--panel-hover);
-        box-shadow: 0 20px 32px rgb(0 0 0 / 0.3);
+        box-shadow: var(--shadow);
         transform: translateY(-2px);
     }
 
@@ -349,14 +407,14 @@ const loadMoreCount = 9;
     .tag {
         padding: 0.125rem 0.5rem;
         border-radius: 999px;
-        background: #27272a;
-        color: #d4d4d8;
+        background: var(--chip-bg);
+        color: var(--chip-text);
         font-size: 0.75rem;
     }
 
     h2 {
         margin: 0;
-        color: #f4f4f5;
+        color: var(--heading);
         font-size: 1.25rem;
         font-weight: 600;
         line-height: 1.75rem;
@@ -369,7 +427,7 @@ const loadMoreCount = 9;
 
     .post-card p:last-child {
         margin: 0.75rem 0 0;
-        color: #a1a1aa;
+        color: var(--body-copy);
         font-size: 0.875rem;
         line-height: 1.5rem;
     }
@@ -389,6 +447,10 @@ const loadMoreCount = 9;
     @media (max-width: 40rem) {
         .blog-shell {
             padding-top: 2rem;
+        }
+
+        .utility-bar {
+            justify-content: stretch;
         }
 
         .hero {
