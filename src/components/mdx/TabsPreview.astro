@@ -1,0 +1,110 @@
+---
+interface TabItem {
+    label: string;
+    content: string;
+}
+
+interface Props {
+    items: TabItem[];
+}
+
+const { items } = Astro.props;
+const instanceId = `tabs-preview-${Math.random().toString(36).slice(2, 10)}`;
+---
+
+<div class="tabs-preview" data-tabs-preview id={instanceId}>
+    <div class="tabs-preview__list" role="tablist" aria-label="Preview tabs">
+        {items.map((item, index) => (
+            <button
+                type="button"
+                class="tabs-preview__tab"
+                role="tab"
+                id={`${instanceId}-tab-${index}`}
+                aria-selected={index === 0 ? 'true' : 'false'}
+                aria-controls={`${instanceId}-panel-${index}`}
+                tabindex={index === 0 ? '0' : '-1'}
+            >
+                {item.label}
+            </button>
+        ))}
+    </div>
+    {items.map((item, index) => (
+        <section
+            class="tabs-preview__panel"
+            role="tabpanel"
+            id={`${instanceId}-panel-${index}`}
+            aria-labelledby={`${instanceId}-tab-${index}`}
+            hidden={index !== 0}
+        >
+            <p>{item.content}</p>
+        </section>
+    ))}
+</div>
+
+<script is:inline>
+    document.querySelectorAll('[data-tabs-preview]').forEach((root) => {
+        if (root.dataset.ready === 'true') return;
+        root.dataset.ready = 'true';
+
+        const tabs = Array.from(root.querySelectorAll('[role="tab"]'));
+        const panels = Array.from(root.querySelectorAll('[role="tabpanel"]'));
+
+        const activateTab = (nextIndex) => {
+            tabs.forEach((tab, index) => {
+                const selected = index === nextIndex;
+                tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+                tab.setAttribute('tabindex', selected ? '0' : '-1');
+            });
+
+            panels.forEach((panel, index) => {
+                panel.hidden = index !== nextIndex;
+            });
+        };
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => activateTab(index));
+        });
+    });
+</script>
+
+<style>
+    .tabs-preview {
+        margin-top: 1rem;
+    }
+
+    .tabs-preview__list {
+        display: flex;
+        gap: 0.25rem;
+        border-bottom: 2px solid var(--sl-color-gray-5);
+        margin-bottom: 1rem;
+    }
+
+    .tabs-preview__tab {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: var(--sl-color-gray-2);
+        cursor: pointer;
+        font: inherit;
+        padding: 0.5rem 1rem;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+    }
+
+    .tabs-preview__tab[aria-selected='true'] {
+        color: var(--sl-color-text-accent);
+        border-bottom-color: var(--sl-color-text-accent);
+        font-weight: 600;
+    }
+
+    .tabs-preview__panel {
+        border: 1px solid var(--sl-color-gray-5);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        background: color-mix(in srgb, var(--sl-color-black) 8%, transparent);
+    }
+
+    .tabs-preview__panel p {
+        margin: 0;
+    }
+</style>

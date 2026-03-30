@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-labelledby="title desc">
+    <title id="title">Markdown image example</title>
+    <desc id="desc">Example image rendered through standard Markdown syntax.</desc>
+    <defs>
+        <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#f7efe3" />
+            <stop offset="100%" stop-color="#d6e9f8" />
+        </linearGradient>
+    </defs>
+    <rect width="960" height="320" fill="url(#bg)" rx="24" />
+    <rect x="44" y="44" width="872" height="232" fill="#fffdf8" rx="18" stroke="#b56a2f" stroke-width="4" />
+    <text x="84" y="118" fill="#7a3b12" font-family="Georgia, serif" font-size="40" font-weight="700">Markdown image syntax</text>
+    <text x="84" y="170" fill="#4a4036" font-family="Arial, sans-serif" font-size="24">Rendered from /public with standard image markdown.</text>
+    <text x="84" y="220" fill="#4a4036" font-family="Courier New, monospace" font-size="22">![Markdown 방식 예시](/images/mdx-markdown-example.svg)</text>
+</svg>

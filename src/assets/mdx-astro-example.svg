@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-labelledby="title desc">
+    <title id="title">Astro image example</title>
+    <desc id="desc">Example image rendered through Astro assets import and Image component.</desc>
+    <defs>
+        <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#e7f8ea" />
+            <stop offset="100%" stop-color="#dbe5ff" />
+        </linearGradient>
+    </defs>
+    <rect width="960" height="320" fill="url(#bg)" rx="24" />
+    <rect x="44" y="44" width="872" height="232" fill="#fbfffd" rx="18" stroke="#2c6b4f" stroke-width="4" />
+    <text x="84" y="118" fill="#174f38" font-family="Georgia, serif" font-size="40" font-weight="700">Astro assets image</text>
+    <text x="84" y="170" fill="#37463f" font-family="Arial, sans-serif" font-size="24">Rendered from src/assets via astro:assets Image component.</text>
+    <text x="84" y="220" fill="#37463f" font-family="Courier New, monospace" font-size="19">import {'{'} Image {'}'} from 'astro:assets';</text>
+</svg>

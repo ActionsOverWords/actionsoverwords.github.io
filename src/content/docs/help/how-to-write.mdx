@@ -1,0 +1,136 @@
+---
+title: 위키 작성 방법
+description: Web1 Team 위키에 문서를 추가하고 관리하는 방법을 안내합니다.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+## 개요
+
+Web1 Team 위키는 **MDX 파일** 형식으로 문서를 관리합니다.
+MDX는 Markdown에 JSX 컴포넌트를 결합한 형식으로, 풍부한 표현이 가능합니다.
+
+## 파일 위치
+
+모든 문서 파일은 `src/content/docs/` 디렉토리 아래에 위치합니다.
+
+```
+src/
+└── content/
+    └── docs/
+        ├── help/          # 도움말 문서
+        └── (팀 문서 디렉토리)
+```
+
+## 새 문서 작성하기
+
+<Steps>
+1. `src/content/docs/` 아래 적절한 디렉토리에 `.mdx` 파일을 생성합니다.
+2. 파일 상단에 **frontmatter**(`title`, `description`)를 작성합니다.
+3. frontmatter 아래에 Markdown 또는 MDX 내용을 작성합니다.
+4. `astro.config.mjs`의 `sidebar` 설정에 새 문서의 `slug`를 추가합니다.
+</Steps>
+
+## frontmatter 필드
+
+| 필드 | 필수 | 설명 |
+|------|------|------|
+| `title` | ✅ | 문서 제목 (사이드바, 탭 타이틀에 표시) |
+| `description` | 권장 | SEO 및 메타 설명 |
+| `sidebar.order` | 선택 | 사이드바 내 정렬 순서 (숫자가 낮을수록 위) |
+| `sidebar.hidden` | 선택 | `true`로 설정 시 사이드바에서 숨김 |
+
+## 마크다운 기본 문법
+
+### 제목
+
+```md
+# h1 제목
+## h2 제목
+### h3 제목
+#### h4 제목
+```
+
+**적용 예:**
+
+#### h1 제목
+##### h2 제목
+###### h3 제목
+
+---
+
+### 텍스트 강조
+
+```md
+**굵게** _기울임_ ~~취소선~~
+```
+
+**적용 예:**
+
+**굵게** _기울임_ ~~취소선~~
+
+---
+
+### 목록
+
+```md
+- 항목 1
+- 항목 2
+  - 중첩 항목
+
+1. 순서 있는 항목
+2. 두 번째 항목
+```
+
+**적용 예:**
+
+- 항목 1
+- 항목 2
+  - 중첩 항목
+
+1. 순서 있는 항목
+2. 두 번째 항목
+
+---
+
+### 링크 및 이미지
+
+```md
+[링크 텍스트](https://example.com)
+![대체 텍스트](./image.png)
+```
+
+**적용 예:**
+
+[링크 텍스트](https://example.com)
+
+---
+
+### 코드
+
+인라인: `` `코드` ``
+
+**적용 예:** `코드`
+
+코드 블록은 백틱 세 개(` ``` `)로 감싸고, 바로 뒤에 언어 이름을 붙이면 문법 강조가 적용됩니다.
+
+````md
+```js
+const greeting = 'Hello, World!';
+```
+````
+
+**적용 예:**
+
+```js
+const greeting = 'Hello, World!';
+```
+
+<Aside type="tip">
+언어 이름 예시: `js`, `ts`, `jsx`, `tsx`, `python`, `bash`, `java`, `css`, `yaml` 등
+</Aside>
+
+## 다음 단계
+
+- [MDX 기본](/help/mdx-basics) — 컴포넌트 import 및 MDX 고유 기능
+- [MDX 확장](/help/mdx-advanced) — Starlight 내장 컴포넌트 활용

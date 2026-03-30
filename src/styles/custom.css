@@ -1,0 +1,10 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+:root {
+  --sl-font: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 사이드바 그룹 레이블 굵기 제거 */
+.sl-sidebar summary {
+  font-weight: 400;
+}

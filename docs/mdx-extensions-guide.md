@@ -183,10 +183,12 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 <Tabs>
   <TabItem label="위키">
-    `src/content/docs/` 아래에 문서를 작성합니다.
+    <p>위키 문서는 <code>src/content/docs/</code> 아래에 작성합니다.</p>
+    <p>오래 보관할 주제 정리, 개념 문서, 레퍼런스 메모를 모읍니다.</p>
   </TabItem>
   <TabItem label="블로그">
-    `src/content/blog/` 아래에 날짜 기반 글을 작성합니다.
+    <p>블로그 글은 <code>src/content/blog/</code> 아래에 작성합니다.</p>
+    <p>날짜 기반 기록, 학습 로그, 회고 메모를 남깁니다.</p>
   </TabItem>
 </Tabs>
 ```

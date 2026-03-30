@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+const docs = await getCollection('docs');
+
+const tagMap = new Map<string, typeof docs>();
+for (const doc of docs) {
+  const tags = (doc.data as any).tags ?? [];
+  for (const tag of tags) {
+    if (!tagMap.has(tag)) tagMap.set(tag, []);
+    tagMap.get(tag)!.push(doc);
+  }
+}
+
+const tags = [...tagMap.entries()].sort(([a], [b]) => a.localeCompare(b, 'ko'));
+---
+
+<StarlightPage frontmatter={{ title: 'Tags', description: '문서 태그 목록' }}>
+  {tags.length === 0 ? (
+    <p>
+      아직 태그가 없습니다. 문서 프론트매터에 아래와 같이 추가하세요.
+    </p>
+    <pre><code>tags:
+  - 태그명
+  - 다른태그</code></pre>
+  ) : (
+    <div>
+      {tags.map(([tag, tagDocs]) => (
+        <section style="margin-bottom: 2rem;">
+          <h2 id={tag} style="display: flex; align-items: center; gap: 0.5rem;">
+            <span>#{tag}</span>
+            <span style="font-size: 0.875rem; font-weight: normal; color: var(--sl-color-gray-3);">
+              ({tagDocs.length}개)
+            </span>
+          </h2>
+          <ul>
+            {tagDocs.map(doc => (
+              <li>
+                <a href={`/${doc.id}/`}>{doc.data.title}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  )}
+</StarlightPage>

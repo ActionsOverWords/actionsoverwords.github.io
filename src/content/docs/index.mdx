@@ -1,36 +1,33 @@
 ---
-title: LeeHK's Wiki
-description: Local-first technical notes, architecture references, and dated learning logs.
+title: ActionsOverWords
+description: 개인 기술 위키 - Java/Kotlin, Spring, JPA, Messaging, Docker 등 백엔드 기술 스택 정리
 template: splash
 hero:
-  tagline: A personal MDX workspace for backend notes, frontend experiments, and verification playbooks.
+  tagline: 백엔드 기술 스택을 정리하는 개인 위키입니다.
   actions:
-    - text: Browse Wiki
-      link: ./backend/node/cache/
+    - text: 위키 둘러보기
+      link: ./java-kotlin/
       icon: right-arrow
-    - text: Read Recent Posts
-      link: ./blog/
-      variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Explore the knowledge base
+## 기술 스택별 문서
 
 <CardGrid stagger>
-    <Card title="Backend Notes" icon="seti:nodejs">
-        Track caching, infrastructure decisions, and runtime tradeoffs in category-first wiki pages.
+    <Card title="Java / Kotlin" icon="seti:java">
+        Java와 Kotlin 언어 관련 내용을 정리합니다.
     </Card>
-    <Card title="Frontend Notes" icon="seti:astro">
-        Document Astro and MDX workflows without losing the docs-first navigation model.
+    <Card title="Spring" icon="seti:spring">
+        Spring Framework, Spring Boot 관련 내용을 정리합니다.
     </Card>
-    <Card title="Testing Playbooks" icon="open-book">
-        Keep type checks, unit coverage, and E2E verification close to the implementation notes.
+    <Card title="JPA / Spring Data / QueryDSL" icon="document">
+        JPA, Spring Data, QueryDSL 관련 내용을 정리합니다.
     </Card>
-    <Card title="Recent Writing" icon="pen">
-        Use the blog area for dated logs, retrospectives, and experiments that should stay chronological.
+    <Card title="Messaging" icon="seti:config">
+        Kafka, RabbitMQ 등 메시지 브로커 관련 내용을 정리합니다.
     </Card>
-    <Card title="Architecture Plan" icon="list">
-        Review the current implementation roadmap in [the architecture plan](./meta/architecture-plan/).
+    <Card title="Docker" icon="seti:docker">
+        Docker, Docker Compose 관련 내용을 정리합니다.
     </Card>
 </CardGrid>

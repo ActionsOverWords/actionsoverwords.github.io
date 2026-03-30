@@ -1,0 +1,265 @@
+---
+title: MDX 확장 (Starlight 컴포넌트)
+description: Starlight에 내장된 UI 컴포넌트를 활용해 문서를 풍부하게 만드는 방법입니다.
+---
+
+import {
+  Aside,
+  Badge,
+  Card,
+  CardGrid,
+  Code,
+  FileTree,
+  Icon,
+  LinkButton,
+  LinkCard,
+  Steps,
+  Tabs,
+  TabItem,
+} from '@astrojs/starlight/components';
+
+Starlight는 MDX 문서에서 바로 사용할 수 있는 다양한 UI 컴포넌트를 제공합니다.
+모두 `@astrojs/starlight/components`에서 import합니다.
+
+```js
+import { Aside, Card, Steps } from '@astrojs/starlight/components';
+```
+
+---
+
+## Aside (콜아웃)
+
+주의사항, 팁, 경고 등을 강조할 때 사용합니다.
+
+```jsx
+<Aside>기본 메모입니다.</Aside>
+<Aside type="tip">도움이 되는 팁입니다.</Aside>
+<Aside type="caution">주의가 필요한 내용입니다.</Aside>
+<Aside type="danger">위험한 작업에 대한 경고입니다.</Aside>
+```
+
+<Aside>기본 메모입니다.</Aside>
+<Aside type="tip">도움이 되는 팁입니다.</Aside>
+<Aside type="caution">주의가 필요한 내용입니다.</Aside>
+<Aside type="danger">위험한 작업에 대한 경고입니다.</Aside>
+
+`title` prop으로 제목을 지정할 수 있습니다.
+
+```mdx
+<Aside type="tip" title="성능 최적화">
+이미지는 WebP 형식을 사용하세요.
+</Aside>
+```
+
+<Aside type="tip" title="성능 최적화">
+이미지는 WebP 형식을 사용하세요.
+</Aside>
+
+---
+
+## Badge (뱃지)
+
+텍스트에 상태 표시 뱃지를 붙입니다.
+
+```jsx
+<Badge text="신규" variant="tip" />
+<Badge text="변경됨" variant="caution" />
+<Badge text="삭제됨" variant="danger" />
+<Badge text="기본" variant="default" />
+<Badge text="정보" variant="note" />
+```
+
+<Badge text="신규" variant="tip" /> <Badge text="변경됨" variant="caution" /> <Badge text="삭제됨" variant="danger" /> <Badge text="기본" variant="default" /> <Badge text="정보" variant="note" />
+
+---
+
+## Card / CardGrid (카드)
+
+정보를 카드 형태로 표현합니다. `CardGrid`로 여러 카드를 격자 배치합니다.
+
+```jsx
+<CardGrid>
+  <Card title="빠른 시작" icon="rocket">
+    5분 안에 프로젝트를 시작하세요.
+  </Card>
+  <Card title="API 문서" icon="open-book">
+    전체 API 레퍼런스를 확인하세요.
+  </Card>
+</CardGrid>
+```
+
+<CardGrid>
+  <Card title="빠른 시작" icon="rocket">
+    5분 안에 프로젝트를 시작하세요.
+  </Card>
+  <Card title="API 문서" icon="open-book">
+    전체 API 레퍼런스를 확인하세요.
+  </Card>
+</CardGrid>
+
+---
+
+## LinkCard
+
+외부 또는 내부 링크를 카드 형식으로 보여줍니다.
+
+```jsx
+<LinkCard title="Starlight 공식 문서" href="https://starlight.astro.build" />
+<LinkCard
+  title="위키 작성 방법"
+  description="문서를 추가하는 방법을 알아보세요."
+  href="/help/how-to-write"
+/>
+```
+
+<LinkCard title="위키 작성 방법" description="문서를 추가하는 방법을 알아보세요." href="/help/how-to-write" />
+
+---
+
+## Steps (단계별 안내)
+
+순서가 있는 절차를 시각적으로 표현합니다.
+
+````mdx
+<Steps>
+1. 저장소를 클론합니다.
+2. 의존성을 설치합니다.
+   ```bash
+   npm install
+   ```
+3. 개발 서버를 실행합니다.
+   ```bash
+   npm run dev
+   ```
+</Steps>
+````
+
+<Steps>
+1. 저장소를 클론합니다.
+2. 의존성을 설치합니다.
+   ```bash
+   npm install
+   ```
+3. 개발 서버를 실행합니다.
+   ```bash
+   npm run dev
+   ```
+</Steps>
+
+---
+
+## Tabs / TabItem (탭)
+
+여러 옵션을 탭으로 구분해 표시합니다.
+
+````mdx
+<Tabs>
+  <TabItem label="npm">
+    ```bash
+    npm install package-name
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```bash
+    pnpm add package-name
+    ```
+  </TabItem>
+  <TabItem label="yarn">
+    ```bash
+    yarn add package-name
+    ```
+  </TabItem>
+</Tabs>
+````
+
+<Tabs>
+  <TabItem label="npm">
+    ```bash
+    npm install package-name
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```bash
+    pnpm add package-name
+    ```
+  </TabItem>
+  <TabItem label="yarn">
+    ```bash
+    yarn add package-name
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## FileTree (파일 트리)
+
+디렉토리 구조를 시각적으로 표현합니다.
+
+```jsx
+<FileTree>
+- src/
+  - content/
+    - docs/
+      - **index.mdx** (현재 파일)
+      - help/
+        - how-to-write.mdx
+  - components/
+- astro.config.mjs
+- package.json
+</FileTree>
+```
+
+<FileTree>
+- src/
+  - content/
+    - docs/
+      - help/
+        - how-to-write.mdx
+        - mdx-basics.mdx
+        - **mdx-advanced.mdx** (현재 파일)
+  - components/
+- astro.config.mjs
+- package.json
+</FileTree>
+
+---
+
+## Code (코드 블록 컴포넌트)
+
+파일 이름, 강조 행 등 고급 옵션이 필요한 코드 블록에 사용합니다.
+
+```jsx
+import { Code } from '@astrojs/starlight/components';
+
+<Code code={`const greeting = 'Hello, Web1 Team!';`} lang="js" title="greeting.js" />
+```
+
+<Code code={`const greeting = 'Hello, Web1 Team!';`} lang="js" title="greeting.js" />
+
+---
+
+## Icon (아이콘)
+
+Starlight 내장 아이콘을 인라인으로 사용합니다.
+
+```jsx
+<Icon name="star" /> <Icon name="warning" /> <Icon name="information" />
+```
+
+<Icon name="star" /> <Icon name="warning" /> <Icon name="information" />
+
+---
+
+## LinkButton (링크 버튼)
+
+CTA(Call To Action) 버튼 스타일의 링크입니다.
+
+```jsx
+<LinkButton href="/help/how-to-write">시작하기</LinkButton>
+<LinkButton href="/help/mdx-basics" variant="secondary">MDX 기본 보기</LinkButton>
+<LinkButton href="https://starlight.astro.build" variant="minimal" icon="external">공식 문서</LinkButton>
+```
+
+<LinkButton href="/help/how-to-write">시작하기</LinkButton>
+<LinkButton href="/help/mdx-basics" variant="secondary">MDX 기본 보기</LinkButton>

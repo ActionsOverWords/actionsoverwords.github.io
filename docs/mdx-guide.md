@@ -145,10 +145,11 @@ Markdown과 동일하게 `#`을 사용합니다.
 백틱 3개를 사용합니다.
 
 ```md
+````md
 ```bash
 npm run dev
 ```
-```
+````
 
 언어를 같이 적으면 하이라이팅이 됩니다.
 
@@ -161,6 +162,34 @@ npm run dev
 ```ts
 const title = 'Hello MDX';
 ```
+
+## 이미지 넣기
+
+가장 쉬운 방법은 Markdown 이미지 문법을 그대로 쓰는 것입니다.
+
+```md
+![Redis 구조 다이어그램](/images/redis-diagram.png)
+```
+
+이 방식은 `public/` 아래에 둔 이미지를 참조할 때 적합합니다.
+
+예를 들어 `public/images/redis-diagram.png` 파일이 있다면 위처럼 바로 연결할 수 있습니다.
+
+이 프로젝트 문서에서는 아래 두 방식 모두 실제 렌더링 예시를 같이 보여줍니다.
+
+조금 더 Astro 방식으로 쓰고 싶다면 import 기반으로 이미지를 사용할 수 있습니다.
+
+```mdx
+import { Image } from 'astro:assets';
+import redisDiagram from '../../../assets/redis-diagram.png';
+
+<Image src={redisDiagram} alt="Redis 구조 다이어그램" />
+```
+
+정리하면:
+
+- 빨리 문서에 이미지만 넣고 싶다면 Markdown 방식
+- 이미지 크기, 자산 관리, 최적화 흐름까지 같이 챙기고 싶다면 Astro 방식
 
 ## 문단 나누기
 

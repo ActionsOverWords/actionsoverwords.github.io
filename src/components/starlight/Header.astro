@@ -11,14 +11,13 @@ const relativePathname = pathname.startsWith(basePath)
     ? `/${pathname.slice(basePath.length).replace(/^\/+/, '')}`
     : pathname;
 const navLinks = [
-    { href: withBase('/'), label: 'Wiki', active: relativePathname === '/' || !relativePathname.startsWith('/blog/') && !relativePathname.startsWith('/tags/') },
-    { href: withBase('/blog/'), label: 'Blog', active: relativePathname === '/blog/' || relativePathname.startsWith('/blog/') },
+    { href: withBase('/'), label: 'Wiki', active: relativePathname === '/' || !relativePathname.startsWith('/tags/') },
     { href: withBase('/tags/'), label: 'Tags', active: relativePathname === '/tags/' || relativePathname.startsWith('/tags/') },
 ];
 const helpLinks = [
-    { href: withBase('/meta/beginner-guide/'), label: '초보자 가이드' },
-    { href: withBase('/meta/mdx-guide/'), label: 'MDX 사용법' },
-    { href: withBase('/meta/mdx-extensions/'), label: '확장 기능' },
+    { href: withBase('/help/how-to-write/'), label: '위키 작성 방법' },
+    { href: withBase('/help/mdx-basics/'), label: 'MDX 기본' },
+    { href: withBase('/help/mdx-advanced/'), label: 'MDX 확장 기능' },
 ];
 
 const shouldRenderSearch =
