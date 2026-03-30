@@ -25,24 +25,97 @@ const tags = [...tagMap.entries()].sort(([a], [b]) => a.localeCompare(b, 'ko'));
   - 태그명
   - 다른태그</code></pre>
   ) : (
-    <div>
+    <div class="tags-grid">
       {tags.map(([tag, tagDocs]) => (
-        <section style="margin-bottom: 2rem;">
-          <h2 id={tag} style="display: flex; align-items: center; gap: 0.5rem;">
-            <span>#{tag}</span>
-            <span style="font-size: 0.875rem; font-weight: normal; color: var(--sl-color-gray-3);">
-              ({tagDocs.length}개)
-            </span>
-          </h2>
-          <ul>
+        <div class="tag-card">
+          <div class="tag-card-header">
+            <span class="tag-label">#{tag}</span>
+            <span class="tag-count">{tagDocs.length}</span>
+          </div>
+          <ul class="tag-doc-list">
             {tagDocs.map(doc => (
               <li>
                 <a href={`/${doc.id}/`}>{doc.data.title}</a>
               </li>
             ))}
           </ul>
-        </section>
+        </div>
       ))}
     </div>
   )}
 </StarlightPage>
+
+<style>
+  .tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    align-items: start;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .tag-card {
+    border: 1px solid var(--sl-color-hairline-shade);
+    border-radius: 0.875rem;
+    padding: 1.25rem 1.25rem 1rem;
+    background: var(--sl-color-bg-sidebar);
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+    margin: 0;
+  }
+
+  .tag-card:hover {
+    border-color: var(--sl-color-accent);
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--sl-color-accent) 12%, transparent);
+  }
+
+  .tag-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.875rem;
+  }
+
+  .tag-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--sl-color-accent);
+  }
+
+  .tag-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--sl-color-gray-3);
+    background: var(--sl-color-gray-6);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+  }
+
+  .tag-doc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .tag-doc-list :global(li) {
+    margin: 0;
+    padding: 0;
+  }
+
+  .tag-doc-list li a {
+    display: block;
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+    transition: background 140ms ease, color 140ms ease;
+  }
+
+  .tag-doc-list li a:hover {
+    background: color-mix(in srgb, var(--sl-color-accent) 10%, transparent);
+    color: var(--sl-color-white);
+  }
+</style>
